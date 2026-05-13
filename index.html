@@ -3,412 +3,585 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
 <title>Breathe Deeper</title>
 
 <style>
-
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
 }
 
-body{
-    width:100vw;
-    height:100vh;
-    overflow:hidden;
-
-    background:#02131d;
-    color:white;
-
-    font-family:Arial, sans-serif;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    transition:background 0.4s ease;
-}
-
-.app{
-    position:relative;
-    width:100%;
-    height:100%;
-}
-
-.logo{
-    position:absolute;
-    top:28px;
-    left:30px;
-
-    font-size:12px;
-    letter-spacing:4px;
-    opacity:0.25;
-    font-weight:bold;
-}
-
-.settings-btn{
-    position:absolute;
-    top:22px;
-    right:24px;
-
-    width:42px;
-    height:42px;
-
-    border:none;
-    background:none;
-
-    color:white;
-    font-size:28px;
-
-    opacity:0.2;
-    cursor:pointer;
-
-    transition:0.2s ease;
-}
-
-.settings-btn:hover{
-    opacity:0.6;
-}
-
-.center-wrap{
-    position:absolute;
-    inset:0;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-}
-
-.outer-circle{
-    width:420px;
-    height:420px;
-
-    border-radius:50%;
-
-    background:rgba(0,0,0,0.35);
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    transition:0.2s ease;
-}
-
-.inner-circle{
-    width:250px;
-    height:250px;
-
-    border-radius:50%;
-
-    background:#1f8fba;
-
-    transform:scale(1);
-
-    transition:transform linear;
-}
-
-.controls{
-    position:absolute;
-
-    bottom:70px;
-    left:50%;
-
-    transform:translateX(-50%);
-
-    display:flex;
-    align-items:center;
-    gap:30px;
-}
-
-.control-btn{
-    background:none;
-    border:none;
-
-    color:white;
-
-    opacity:0.2;
-
-    font-size:28px;
-
-    cursor:pointer;
-
-    transition:0.2s ease;
-}
-
-.control-btn:hover{
-    opacity:0.6;
-}
-
-.panel{
-    position:absolute;
-
-    top:80px;
-    right:24px;
-
-    width:240px;
-
-    padding:18px;
-
-    border-radius:16px;
-
-    background:rgba(10,10,10,0.75);
-
-    backdrop-filter:blur(20px);
-
-    display:none;
-
-    flex-direction:column;
-    gap:18px;
-}
-
-.panel.active{
-    display:flex;
-}
-
-.setting-group{
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-}
-
-.setting-group label{
-    font-size:13px;
-    opacity:0.7;
-}
-
-.setting-group input{
-    width:100%;
-}
-
-.mode-toggle{
-    padding:10px;
-    border:none;
-    border-radius:10px;
-
-    background:#1f8fba;
-    color:white;
-
-    cursor:pointer;
+:root{
+  --bg:#02131d;
+  --text:#ffffff;
+  --muted:rgba(255,255,255,.28);
+  --panel:rgba(5,14,20,.72);
+  --ring:rgba(0,0,0,.42);
+  --circle:#1f8fba;
+  --accent:#1f8fba;
 }
 
 body.light{
-    background:#ececec;
-    color:#111;
+  --bg:#eeeeee;
+  --text:#101820;
+  --muted:rgba(0,0,0,.28);
+  --panel:rgba(255,255,255,.72);
+  --ring:rgba(0,0,0,.12);
+  --circle:#607462;
+  --accent:#607462;
 }
 
-body.light .settings-btn,
-body.light .control-btn,
-body.light .logo{
-    color:#111;
+body{
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial, Helvetica, sans-serif;
+  transition:background .5s ease, color .5s ease;
 }
 
-body.light .outer-circle{
-    background:rgba(0,0,0,0.1);
+.app{
+  width:100%;
+  height:100%;
+  position:relative;
 }
 
-body.light .panel{
-    background:rgba(255,255,255,0.8);
+.logo{
+  position:absolute;
+  top:28px;
+  left:30px;
+  font-size:11px;
+  letter-spacing:4px;
+  font-weight:700;
+  color:var(--muted);
+  user-select:none;
 }
 
+.icon-btn{
+  border:none;
+  background:none;
+  color:var(--muted);
+  cursor:pointer;
+  transition:opacity .2s ease, transform .2s ease, color .2s ease;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.icon-btn:hover{
+  color:var(--text);
+  transform:scale(1.04);
+}
+
+.settings-btn{
+  position:absolute;
+  top:25px;
+  right:28px;
+  font-size:31px;
+  z-index:5;
+}
+
+.stage{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.outer-circle{
+  width:min(52vw, 520px);
+  height:min(52vw, 520px);
+  min-width:280px;
+  min-height:280px;
+  border-radius:50%;
+  background:var(--ring);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  animation:fadeIn 1.2s ease forwards;
+}
+
+.inner-circle{
+  width:82%;
+  height:82%;
+  border-radius:50%;
+  background:var(--circle);
+  transform:scale(.08);
+  transition:transform linear, background .4s ease;
+  box-shadow:0 0 80px rgba(31,143,186,.12);
+}
+
+.controls{
+  position:absolute;
+  bottom:68px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  align-items:center;
+  gap:32px;
+  z-index:4;
+}
+
+.controls .icon-btn{
+  font-size:32px;
+  width:34px;
+  height:34px;
+}
+
+.panel{
+  position:absolute;
+  z-index:10;
+  display:none;
+  border:1px solid rgba(255,255,255,.08);
+  background:var(--panel);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  box-shadow:0 20px 80px rgba(0,0,0,.28);
+  border-radius:22px;
+  color:var(--text);
+}
+
+.panel.active{
+  display:block;
+  animation:panelIn .22s ease forwards;
+}
+
+.settings-panel{
+  top:76px;
+  right:28px;
+  width:290px;
+  padding:18px;
+}
+
+.presets-panel{
+  bottom:118px;
+  left:50%;
+  transform:translateX(-50%);
+  width:280px;
+  padding:12px;
+}
+
+.panel-title{
+  font-size:10px;
+  letter-spacing:3px;
+  color:var(--muted);
+  margin-bottom:16px;
+  font-weight:700;
+}
+
+.setting{
+  margin-bottom:15px;
+}
+
+.setting-top{
+  display:flex;
+  justify-content:space-between;
+  font-size:13px;
+  margin-bottom:8px;
+  color:var(--text);
+}
+
+.setting-top span:last-child{
+  color:var(--muted);
+}
+
+input[type="range"]{
+  width:100%;
+  accent-color:var(--accent);
+}
+
+.preset-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.preset{
+  border:none;
+  border-radius:14px;
+  padding:13px 10px;
+  background:rgba(255,255,255,.06);
+  color:var(--text);
+  cursor:pointer;
+  text-align:left;
+  transition:.2s ease;
+}
+
+.preset:hover{
+  background:rgba(255,255,255,.12);
+  transform:translateY(-1px);
+}
+
+.preset strong{
+  display:block;
+  font-size:15px;
+  margin-bottom:4px;
+}
+
+.preset span{
+  font-size:10px;
+  letter-spacing:1px;
+  color:var(--muted);
+}
+
+.toggle-row{
+  display:flex;
+  gap:8px;
+  margin-top:18px;
+}
+
+.small-btn{
+  flex:1;
+  border:none;
+  border-radius:14px;
+  padding:12px 10px;
+  background:rgba(255,255,255,.07);
+  color:var(--text);
+  cursor:pointer;
+}
+
+.color-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:14px;
+  font-size:13px;
+}
+
+input[type="color"]{
+  border:none;
+  width:38px;
+  height:28px;
+  background:none;
+  cursor:pointer;
+}
+
+@keyframes fadeIn{
+  to{opacity:1;}
+}
+
+@keyframes panelIn{
+  from{opacity:0; transform:translateY(8px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+@media(max-width:700px){
+  .outer-circle{
+    width:78vw;
+    height:78vw;
+  }
+
+  .settings-panel{
+    right:16px;
+    width:calc(100vw - 32px);
+  }
+
+  .logo{
+    left:20px;
+  }
+}
 </style>
 </head>
 
 <body>
-
 <div class="app">
 
-    <div class="logo">
-        BREATHE DEEPER
+  <div class="logo">BREATHE DEEPER</div>
+
+  <button class="icon-btn settings-btn" id="settingsBtn">⚙</button>
+
+  <div class="stage">
+    <div class="outer-circle">
+      <div class="inner-circle" id="circle"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="icon-btn" id="presetBtn">≡</button>
+    <button class="icon-btn" id="playBtn">■</button>
+    <button class="icon-btn" id="resetBtn">●</button>
+  </div>
+
+  <div class="panel presets-panel" id="presetsPanel">
+    <div class="panel-title">PRESETS</div>
+
+    <div class="preset-grid">
+      <button class="preset" data-in="4" data-h1="0" data-out="6" data-h2="0">
+        <strong>4 · 6</strong>
+        <span>CALM</span>
+      </button>
+
+      <button class="preset" data-in="5" data-h1="0" data-out="5" data-h2="0">
+        <strong>5 · 5</strong>
+        <span>BALANCE</span>
+      </button>
+
+      <button class="preset" data-in="4" data-h1="0" data-out="4" data-h2="0">
+        <strong>4 · 4</strong>
+        <span>EASY</span>
+      </button>
+
+      <button class="preset" data-in="4" data-h1="7" data-out="8" data-h2="0">
+        <strong>4 · 7 · 8</strong>
+        <span>DEEP</span>
+      </button>
+
+      <button class="preset" data-in="4" data-h1="4" data-out="4" data-h2="4">
+        <strong>BOX</strong>
+        <span>4 · 4 · 4 · 4</span>
+      </button>
+
+      <button class="preset" data-in="3" data-h1="0" data-out="7" data-h2="0">
+        <strong>3 · 7</strong>
+        <span>SLOW</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="panel settings-panel" id="settingsPanel">
+    <div class="panel-title">SETTINGS</div>
+
+    <div class="setting">
+      <div class="setting-top">
+        <span>Inhale</span>
+        <span id="inhaleValue">4 sec</span>
+      </div>
+      <input type="range" min="1" max="12" value="4" id="inhaleSlider">
     </div>
 
-    <button class="settings-btn" id="settingsBtn">
-        ⚙
-    </button>
-
-    <div class="center-wrap">
-        <div class="outer-circle">
-
-            <div class="inner-circle" id="circle"></div>
-
-        </div>
+    <div class="setting">
+      <div class="setting-top">
+        <span>Hold</span>
+        <span id="hold1Value">0 sec</span>
+      </div>
+      <input type="range" min="0" max="12" value="0" id="hold1Slider">
     </div>
 
-    <div class="controls">
-
-        <button class="control-btn" id="presetBtn">
-            ≡
-        </button>
-
-        <button class="control-btn" id="playBtn">
-            ▶
-        </button>
-
-        <button class="control-btn" id="resetBtn">
-            ●
-        </button>
-
+    <div class="setting">
+      <div class="setting-top">
+        <span>Exhale</span>
+        <span id="exhaleValue">6 sec</span>
+      </div>
+      <input type="range" min="1" max="12" value="6" id="exhaleSlider">
     </div>
 
-    <div class="panel" id="panel">
-
-        <div class="setting-group">
-            <label>Inhale</label>
-            <input type="range" min="1" max="10" value="4" id="inhaleSlider">
-        </div>
-
-        <div class="setting-group">
-            <label>Exhale</label>
-            <input type="range" min="1" max="10" value="6" id="exhaleSlider">
-        </div>
-
-        <div class="setting-group">
-            <label>Hold After Inhale</label>
-            <input type="range" min="0" max="10" value="0" id="hold1Slider">
-        </div>
-
-        <div class="setting-group">
-            <label>Hold After Exhale</label>
-            <input type="range" min="0" max="10" value="0" id="hold2Slider">
-        </div>
-
-        <button class="mode-toggle" id="modeToggle">
-            Toggle Light / Dark
-        </button>
-
+    <div class="setting">
+      <div class="setting-top">
+        <span>Rest</span>
+        <span id="hold2Value">0 sec</span>
+      </div>
+      <input type="range" min="0" max="12" value="0" id="hold2Slider">
     </div>
+
+    <div class="toggle-row">
+      <button class="small-btn" id="darkBtn">Dark</button>
+      <button class="small-btn" id="lightBtn">Light</button>
+    </div>
+
+    <div class="color-row">
+      <span>Circle Color</span>
+      <input type="color" id="colorPicker" value="#1f8fba">
+    </div>
+  </div>
 
 </div>
 
 <script>
-
 const circle = document.getElementById("circle");
 
 const playBtn = document.getElementById("playBtn");
 const resetBtn = document.getElementById("resetBtn");
-
+const presetBtn = document.getElementById("presetBtn");
 const settingsBtn = document.getElementById("settingsBtn");
-const panel = document.getElementById("panel");
+
+const presetsPanel = document.getElementById("presetsPanel");
+const settingsPanel = document.getElementById("settingsPanel");
 
 const inhaleSlider = document.getElementById("inhaleSlider");
-const exhaleSlider = document.getElementById("exhaleSlider");
-
 const hold1Slider = document.getElementById("hold1Slider");
+const exhaleSlider = document.getElementById("exhaleSlider");
 const hold2Slider = document.getElementById("hold2Slider");
 
-const modeToggle = document.getElementById("modeToggle");
+const inhaleValue = document.getElementById("inhaleValue");
+const hold1Value = document.getElementById("hold1Value");
+const exhaleValue = document.getElementById("exhaleValue");
+const hold2Value = document.getElementById("hold2Value");
 
-let inhale = 4;
-let exhale = 6;
+const darkBtn = document.getElementById("darkBtn");
+const lightBtn = document.getElementById("lightBtn");
+const colorPicker = document.getElementById("colorPicker");
 
-let hold1 = 0;
-let hold2 = 0;
-
-let running = false;
-
-settingsBtn.addEventListener("click", ()=>{
-
-    panel.classList.toggle("active");
-
-});
-
-modeToggle.addEventListener("click", ()=>{
-
-    document.body.classList.toggle("light");
-
-});
-
-inhaleSlider.addEventListener("input", ()=>{
-
-    inhale = inhaleSlider.value;
-
-});
-
-exhaleSlider.addEventListener("input", ()=>{
-
-    exhale = exhaleSlider.value;
-
-});
-
-hold1Slider.addEventListener("input", ()=>{
-
-    hold1 = hold1Slider.value;
-
-});
-
-hold2Slider.addEventListener("input", ()=>{
-
-    hold2 = hold2Slider.value;
-
-});
-
-function wait(ms){
-
-    return new Promise(resolve=>setTimeout(resolve, ms));
-
-}
-
-async function breatheLoop(){
-
-    while(running){
-
-        circle.style.transition = `${inhale}s linear`;
-        circle.style.transform = `scale(1.55)`;
-
-        await wait(inhale * 1000);
-
-        await wait(hold1 * 1000);
-
-        circle.style.transition = `${exhale}s linear`;
-        circle.style.transform = `scale(1)`;
-
-        await wait(exhale * 1000);
-
-        await wait(hold2 * 1000);
-
-    }
-
-}
-
-playBtn.addEventListener("click", ()=>{
-
-    if(!running){
-
-        running = true;
-
-        playBtn.innerHTML = "■";
-
-        breatheLoop();
-
-    }else{
-
-        running = false;
-
-        playBtn.innerHTML = "▶";
-
-    }
-
-});
-
-resetBtn.addEventListener("click", ()=>{
-
-    circle.style.transition = `0.2s ease`;
-    circle.style.transform = `scale(1)`;
-
-});
-
-window.onload = ()=>{
-
-    running = true;
-
-    playBtn.innerHTML = "■";
-
-    breatheLoop();
-
+let settings = {
+  inhale:4,
+  hold1:0,
+  exhale:6,
+  hold2:0
 };
 
-</script>
+let running = true;
+let loopId = 0;
+let timers = [];
 
+function clearTimers(){
+  timers.forEach(timer => clearTimeout(timer));
+  timers = [];
+}
+
+function wait(ms){
+  return new Promise(resolve => {
+    const timer = setTimeout(resolve, ms);
+    timers.push(timer);
+  });
+}
+
+function updateLabels(){
+  inhaleValue.textContent = settings.inhale + " sec";
+  hold1Value.textContent = settings.hold1 + " sec";
+  exhaleValue.textContent = settings.exhale + " sec";
+  hold2Value.textContent = settings.hold2 + " sec";
+}
+
+function syncSliders(){
+  inhaleSlider.value = settings.inhale;
+  hold1Slider.value = settings.hold1;
+  exhaleSlider.value = settings.exhale;
+  hold2Slider.value = settings.hold2;
+  updateLabels();
+}
+
+function stopBreath(){
+  running = false;
+  loopId++;
+  clearTimers();
+  playBtn.textContent = "▶";
+}
+
+function startBreath(){
+  stopBreath();
+
+  running = true;
+  loopId++;
+  playBtn.textContent = "■";
+
+  circle.style.transition = "none";
+  circle.style.transform = "scale(.08)";
+
+  setTimeout(() => breatheLoop(loopId), 80);
+}
+
+async function breatheLoop(id){
+  while(running && id === loopId){
+
+    circle.style.transition = `${settings.inhale}s cubic-bezier(.33,0,.22,1)`;
+    circle.style.transform = "scale(1)";
+
+    await wait(settings.inhale * 1000);
+    if(!running || id !== loopId) return;
+
+    if(settings.hold1 > 0){
+      circle.style.transition = "none";
+      circle.style.transform = "scale(1)";
+      await wait(settings.hold1 * 1000);
+      if(!running || id !== loopId) return;
+    }
+
+    circle.style.transition = `${settings.exhale}s cubic-bezier(.33,0,.22,1)`;
+    circle.style.transform = "scale(.08)";
+
+    await wait(settings.exhale * 1000);
+    if(!running || id !== loopId) return;
+
+    if(settings.hold2 > 0){
+      circle.style.transition = "none";
+      circle.style.transform = "scale(.08)";
+      await wait(settings.hold2 * 1000);
+      if(!running || id !== loopId) return;
+    }
+  }
+}
+
+playBtn.addEventListener("click", () => {
+  if(running){
+    stopBreath();
+  }else{
+    startBreath();
+  }
+});
+
+resetBtn.addEventListener("click", () => {
+  startBreath();
+});
+
+settingsBtn.addEventListener("click", () => {
+  settingsPanel.classList.toggle("active");
+  presetsPanel.classList.remove("active");
+});
+
+presetBtn.addEventListener("click", () => {
+  presetsPanel.classList.toggle("active");
+  settingsPanel.classList.remove("active");
+});
+
+document.querySelectorAll(".preset").forEach(btn => {
+  btn.addEventListener("click", () => {
+    settings.inhale = Number(btn.dataset.in);
+    settings.hold1 = Number(btn.dataset.h1);
+    settings.exhale = Number(btn.dataset.out);
+    settings.hold2 = Number(btn.dataset.h2);
+
+    syncSliders();
+    presetsPanel.classList.remove("active");
+    startBreath();
+  });
+});
+
+[inhaleSlider, hold1Slider, exhaleSlider, hold2Slider].forEach(slider => {
+  slider.addEventListener("input", () => {
+    settings.inhale = Number(inhaleSlider.value);
+    settings.hold1 = Number(hold1Slider.value);
+    settings.exhale = Number(exhaleSlider.value);
+    settings.hold2 = Number(hold2Slider.value);
+
+    updateLabels();
+  });
+
+  slider.addEventListener("change", () => {
+    startBreath();
+  });
+});
+
+darkBtn.addEventListener("click", () => {
+  document.body.classList.remove("light");
+});
+
+lightBtn.addEventListener("click", () => {
+  document.body.classList.add("light");
+});
+
+colorPicker.addEventListener("input", () => {
+  document.documentElement.style.setProperty("--circle", colorPicker.value);
+  document.documentElement.style.setProperty("--accent", colorPicker.value);
+});
+
+document.addEventListener("click", e => {
+  if(!settingsPanel.contains(e.target) && !settingsBtn.contains(e.target)){
+    if(!e.target.closest("#settingsBtn")) settingsPanel.classList.remove("active");
+  }
+
+  if(!presetsPanel.contains(e.target) && !presetBtn.contains(e.target)){
+    if(!e.target.closest("#presetBtn")) presetsPanel.classList.remove("active");
+  }
+});
+
+syncSliders();
+
+window.onload = () => {
+  startBreath();
+};
+</script>
 </body>
 </html>
