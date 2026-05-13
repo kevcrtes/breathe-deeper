@@ -16,7 +16,7 @@
   --ring:rgba(0,0,0,.42);
   --circle:#1f8fba;
   --accent:#1f8fba;
-  --halo:rgba(31,143,186,.34);
+  --holdStroke:#7ce2ff;
   --shadow:rgba(0,0,0,.22);
 }
 
@@ -122,24 +122,6 @@ body{
     0 18px 70px rgba(0,0,0,.10);
 }
 
-.outer-circle::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius:50%;
-  pointer-events:none;
-  opacity:0;
-  box-shadow:
-    0 0 35px 8px var(--halo),
-    inset 0 0 28px var(--halo);
-  transition:opacity .45s ease, box-shadow .45s ease;
-}
-
-.outer-circle.holding::after{
-  opacity:1;
-  animation:holdHalo 2.2s ease-in-out infinite;
-}
-
 .inner-circle{
   width:100%;
   height:100%;
@@ -149,6 +131,33 @@ body{
   transition:transform linear, background .4s ease;
   box-shadow:inset 0 0 24px rgba(0,0,0,.08);
   z-index:1;
+}
+
+.hold-ring{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:3;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .55s ease;
+  transform:rotate(-90deg);
+  filter:drop-shadow(0 0 7px var(--holdStroke));
+}
+
+.hold-ring.active{
+  opacity:1;
+}
+
+.hold-progress{
+  fill:none;
+  stroke:var(--holdStroke);
+  stroke-width:1.25;
+  stroke-linecap:round;
+  stroke-dasharray:314;
+  stroke-dashoffset:314;
+  transition:stroke .4s ease;
 }
 
 .controls{
@@ -308,19 +317,6 @@ input[type="color"]{
   to{opacity:1;}
 }
 
-@keyframes holdHalo{
-  0%,100%{
-    box-shadow:
-      0 0 26px 4px var(--halo),
-      inset 0 0 22px var(--halo);
-  }
-  50%{
-    box-shadow:
-      0 0 48px 14px var(--halo),
-      inset 0 0 34px var(--halo);
-  }
-}
-
 @media(max-width:700px){
   .outer-circle{
     width:78vw;
@@ -373,6 +369,10 @@ input[type="color"]{
   <div class="stage">
     <div class="outer-circle" id="outerCircle">
       <div class="inner-circle" id="circle"></div>
+
+      <svg class="hold-ring" id="holdRing" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <circle class="hold-progress" id="holdProgress" cx="50" cy="50" r="49.4"></circle>
+      </svg>
     </div>
   </div>
 
@@ -456,6 +456,8 @@ input[type="color"]{
 <script>
 const circle = document.getElementById("circle");
 const outerCircle = document.getElementById("outerCircle");
+const holdRing = document.getElementById("holdRing");
+const holdProgress = document.getElementById("holdProgress");
 
 const resetBtn = document.getElementById("resetBtn");
 const presetBtn = document.getElementById("presetBtn");
@@ -488,6 +490,8 @@ let running = true;
 let loopId = 0;
 let timers = [];
 
+const holdLength = 314;
+
 const themes = {
   dark:{
     bg:"#02131d",
@@ -509,6 +513,22 @@ function hexToRgb(hex){
     g:(bigint >> 8) & 255,
     b:bigint & 255
   };
+}
+
+function rgbToHex(r,g,b){
+  return "#" + [r,g,b].map(x => {
+    const hex = Math.max(0, Math.min(255, Math.round(x))).toString(16);
+    return hex.length === 1 ? "0" + hex : hex;
+  }).join("");
+}
+
+function lightenHex(hex, amount = 62){
+  const {r,g,b} = hexToRgb(hex);
+  return rgbToHex(
+    r + (255 - r) * amount / 100,
+    g + (255 - g) * amount / 100,
+    b + (255 - b) * amount / 100
+  );
 }
 
 function luminance(hex){
@@ -540,10 +560,10 @@ function setBackgroundColor(hex){
 }
 
 function setCircleColor(hex){
-  const {r,g,b} = hexToRgb(hex);
+  const lightened = lightenHex(hex, 62);
   document.documentElement.style.setProperty("--circle", hex);
   document.documentElement.style.setProperty("--accent", hex);
-  document.documentElement.style.setProperty("--halo", `rgba(${r},${g},${b},.34)`);
+  document.documentElement.style.setProperty("--holdStroke", lightened);
 }
 
 function setRingColor(hex){
@@ -592,11 +612,38 @@ function syncSliders(){
   updateLabels();
 }
 
+function resetHoldRing(){
+  holdRing.classList.remove("active");
+  holdProgress.style.transition = "none";
+  holdProgress.style.strokeDashoffset = holdLength;
+}
+
+async function animateHold(duration, id){
+  resetHoldRing();
+
+  await wait(60);
+  if(!running || id !== loopId) return;
+
+  holdRing.classList.add("active");
+  holdProgress.style.transition = `stroke-dashoffset ${duration}s linear`;
+  holdProgress.style.strokeDashoffset = "0";
+
+  await wait(duration * 1000);
+  if(!running || id !== loopId) return;
+
+  holdRing.classList.remove("active");
+
+  await wait(450);
+
+  holdProgress.style.transition = "none";
+  holdProgress.style.strokeDashoffset = holdLength;
+}
+
 function restartBreath(){
   running = false;
   loopId++;
   clearTimers();
-  outerCircle.classList.remove("holding");
+  resetHoldRing();
 
   circle.style.transition = "none";
   circle.style.transform = "scale(0)";
@@ -611,7 +658,8 @@ function restartBreath(){
 async function breatheLoop(id){
   while(running && id === loopId){
 
-    outerCircle.classList.remove("holding");
+    resetHoldRing();
+
     circle.style.transition = `${activeSettings.inhale}s cubic-bezier(.25,.02,.75,.98)`;
     circle.style.transform = "scale(1)";
 
@@ -619,11 +667,9 @@ async function breatheLoop(id){
     if(!running || id !== loopId) return;
 
     if(activeSettings.hold1 > 0){
-      outerCircle.classList.add("holding");
       circle.style.transition = "none";
       circle.style.transform = "scale(1)";
-      await wait(activeSettings.hold1 * 1000);
-      outerCircle.classList.remove("holding");
+      await animateHold(activeSettings.hold1, id);
       if(!running || id !== loopId) return;
     }
 
@@ -634,11 +680,9 @@ async function breatheLoop(id){
     if(!running || id !== loopId) return;
 
     if(activeSettings.hold2 > 0){
-      outerCircle.classList.add("holding");
       circle.style.transition = "none";
       circle.style.transform = "scale(0)";
-      await wait(activeSettings.hold2 * 1000);
-      outerCircle.classList.remove("holding");
+      await animateHold(activeSettings.hold2, id);
       if(!running || id !== loopId) return;
     }
   }
@@ -758,6 +802,9 @@ function makeDraggable(panel){
 
 makeDraggable(settingsPanel);
 makeDraggable(presetsPanel);
+
+holdProgress.style.strokeDasharray = holdLength;
+holdProgress.style.strokeDashoffset = holdLength;
 
 syncSliders();
 applyTheme(themes.dark);
