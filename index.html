@@ -560,10 +560,19 @@ function setBackgroundColor(hex){
 }
 
 function setCircleColor(hex){
-  const lightened = lightenHex(hex, 62);
+  const lum = luminance(hex);
+  let holdColor;
+
+  if(lum > 0.82){
+    const {r,g,b} = hexToRgb(hex);
+    holdColor = rgbToHex(r * 0.42, g * 0.42, b * 0.42);
+  }else{
+    holdColor = lightenHex(hex, 62);
+  }
+
   document.documentElement.style.setProperty("--circle", hex);
   document.documentElement.style.setProperty("--accent", hex);
-  document.documentElement.style.setProperty("--holdStroke", lightened);
+  document.documentElement.style.setProperty("--holdStroke", holdColor);
 }
 
 function setRingColor(hex){
@@ -614,6 +623,8 @@ function syncSliders(){
 
 function resetHoldRing(){
   holdRing.classList.remove("active");
+  holdRing.style.opacity = "";
+  holdRing.style.transition = "";
   holdProgress.style.transition = "none";
   holdProgress.style.strokeDashoffset = holdLength;
 }
@@ -624,16 +635,28 @@ async function animateHold(duration, id){
   await wait(60);
   if(!running || id !== loopId) return;
 
+  const fadeTime = Math.min(0.65, duration * 0.28);
+  const fadeStart = Math.max(0, duration - fadeTime);
+
   holdRing.classList.add("active");
+  holdRing.style.transition = "opacity .18s ease";
+  holdRing.style.opacity = "1";
+
   holdProgress.style.transition = `stroke-dashoffset ${duration}s linear`;
   holdProgress.style.strokeDashoffset = "0";
+
+  setTimeout(() => {
+    if(!running || id !== loopId) return;
+    holdRing.style.transition = `opacity ${fadeTime}s ease`;
+    holdRing.style.opacity = "0";
+  }, fadeStart * 1000);
 
   await wait(duration * 1000);
   if(!running || id !== loopId) return;
 
   holdRing.classList.remove("active");
-
-  await wait(450);
+  holdRing.style.opacity = "";
+  holdRing.style.transition = "";
 
   holdProgress.style.transition = "none";
   holdProgress.style.strokeDashoffset = holdLength;
