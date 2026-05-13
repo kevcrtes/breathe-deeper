@@ -6,11 +6,7 @@
 <title>Breathe Deeper</title>
 
 <style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
+*{margin:0;padding:0;box-sizing:border-box;}
 
 :root{
   --bg:#02131d;
@@ -40,11 +36,7 @@ body{
   transition:background .5s ease, color .5s ease;
 }
 
-.app{
-  width:100%;
-  height:100%;
-  position:relative;
-}
+.app{width:100%;height:100%;position:relative;}
 
 .logo{
   position:absolute;
@@ -62,10 +54,10 @@ body{
   background:none;
   color:var(--muted);
   cursor:pointer;
-  transition:color .2s ease, transform .2s ease;
   display:flex;
   align-items:center;
   justify-content:center;
+  transition:color .2s ease, transform .2s ease;
 }
 
 .icon-btn:hover{
@@ -109,9 +101,8 @@ body{
   height:100%;
   border-radius:50%;
   background:var(--circle);
-  transform:scale(.06);
+  transform:scale(0);
   transition:transform linear, background .4s ease;
-  box-shadow:0 0 80px rgba(31,143,186,.12);
 }
 
 .controls{
@@ -121,14 +112,15 @@ body{
   transform:translateX(-50%);
   display:flex;
   align-items:center;
-  gap:42px;
+  gap:26px;
   z-index:4;
 }
 
 .controls .icon-btn{
-  font-size:34px;
-  width:38px;
-  height:38px;
+  font-size:31px;
+  width:34px;
+  height:34px;
+  line-height:1;
 }
 
 .panel{
@@ -144,10 +136,7 @@ body{
   color:var(--text);
 }
 
-.panel.active{
-  display:block;
-  animation:panelIn .22s ease forwards;
-}
+.panel.active{display:block;}
 
 .settings-panel{
   top:76px;
@@ -170,23 +159,20 @@ body{
   color:var(--muted);
   margin-bottom:16px;
   font-weight:700;
+  cursor:grab;
+  user-select:none;
 }
 
-.setting{
-  margin-bottom:15px;
-}
+.setting{margin-bottom:15px;}
 
 .setting-top{
   display:flex;
   justify-content:space-between;
   font-size:13px;
   margin-bottom:8px;
-  color:var(--text);
 }
 
-.setting-top span:last-child{
-  color:var(--muted);
-}
+.setting-top span:last-child{color:var(--muted);}
 
 input[type="range"]{
   width:100%;
@@ -272,14 +258,7 @@ input[type="color"]{
   cursor:pointer;
 }
 
-@keyframes fadeIn{
-  to{opacity:1;}
-}
-
-@keyframes panelIn{
-  from{opacity:0; transform:translateY(8px);}
-  to{opacity:1; transform:translateY(0);}
-}
+@keyframes fadeIn{to{opacity:1;}}
 
 @media(max-width:700px){
   .outer-circle{
@@ -288,13 +267,20 @@ input[type="color"]{
   }
 
   .settings-panel{
+    top:74px;
     right:16px;
     width:calc(100vw - 32px);
   }
 
-  .logo{
-    left:20px;
+  .presets-panel{
+    left:50%;
+    right:auto;
+    transform:translateX(-50%);
+    width:calc(100vw - 44px);
+    max-width:310px;
   }
+
+  .logo{left:20px;}
 }
 </style>
 </head>
@@ -321,35 +307,12 @@ input[type="color"]{
     <div class="panel-title">PRESETS</div>
 
     <div class="preset-grid">
-      <button class="preset" data-in="4" data-h1="0" data-out="6" data-h2="0">
-        <strong>4 · 6</strong>
-        <span>CALM</span>
-      </button>
-
-      <button class="preset" data-in="5" data-h1="0" data-out="5" data-h2="0">
-        <strong>5 · 5</strong>
-        <span>BALANCE</span>
-      </button>
-
-      <button class="preset" data-in="4" data-h1="0" data-out="4" data-h2="0">
-        <strong>4 · 4</strong>
-        <span>EASY</span>
-      </button>
-
-      <button class="preset" data-in="4" data-h1="7" data-out="8" data-h2="0">
-        <strong>4 · 7 · 8</strong>
-        <span>DEEP</span>
-      </button>
-
-      <button class="preset" data-in="4" data-h1="4" data-out="4" data-h2="4">
-        <strong>BOX</strong>
-        <span>4 · 4 · 4 · 4</span>
-      </button>
-
-      <button class="preset" data-in="3" data-h1="0" data-out="7" data-h2="0">
-        <strong>3 · 7</strong>
-        <span>SLOW</span>
-      </button>
+      <button class="preset" data-in="4" data-h1="0" data-out="6" data-h2="0"><strong>4 · 6</strong><span>CALM</span></button>
+      <button class="preset" data-in="5" data-h1="0" data-out="5" data-h2="0"><strong>5 · 5</strong><span>BALANCE</span></button>
+      <button class="preset" data-in="4" data-h1="0" data-out="4" data-h2="0"><strong>4 · 4</strong><span>EASY</span></button>
+      <button class="preset" data-in="4" data-h1="7" data-out="8" data-h2="0"><strong>4 · 7 · 8</strong><span>DEEP</span></button>
+      <button class="preset" data-in="4" data-h1="4" data-out="4" data-h2="4"><strong>BOX</strong><span>4 · 4 · 4 · 4</span></button>
+      <button class="preset" data-in="3" data-h1="0" data-out="7" data-h2="0"><strong>3 · 7</strong><span>SLOW</span></button>
     </div>
   </div>
 
@@ -357,34 +320,22 @@ input[type="color"]{
     <div class="panel-title">SETTINGS</div>
 
     <div class="setting">
-      <div class="setting-top">
-        <span>Inhale</span>
-        <span id="inhaleValue">4 sec</span>
-      </div>
+      <div class="setting-top"><span>Inhale</span><span id="inhaleValue">4 sec</span></div>
       <input type="range" min="1" max="12" value="4" id="inhaleSlider">
     </div>
 
     <div class="setting">
-      <div class="setting-top">
-        <span>Hold</span>
-        <span id="hold1Value">0 sec</span>
-      </div>
+      <div class="setting-top"><span>Hold</span><span id="hold1Value">0 sec</span></div>
       <input type="range" min="0" max="12" value="0" id="hold1Slider">
     </div>
 
     <div class="setting">
-      <div class="setting-top">
-        <span>Exhale</span>
-        <span id="exhaleValue">6 sec</span>
-      </div>
+      <div class="setting-top"><span>Exhale</span><span id="exhaleValue">6 sec</span></div>
       <input type="range" min="1" max="12" value="6" id="exhaleSlider">
     </div>
 
     <div class="setting">
-      <div class="setting-top">
-        <span>Rest</span>
-        <span id="hold2Value">0 sec</span>
-      </div>
+      <div class="setting-top"><span>Rest</span><span id="hold2Value">0 sec</span></div>
       <input type="range" min="0" max="12" value="0" id="hold2Slider">
     </div>
 
@@ -410,7 +361,6 @@ input[type="color"]{
 
 <script>
 const circle = document.getElementById("circle");
-
 const resetBtn = document.getElementById("resetBtn");
 const presetBtn = document.getElementById("presetBtn");
 const settingsBtn = document.getElementById("settingsBtn");
@@ -434,12 +384,8 @@ const lightBtn = document.getElementById("lightBtn");
 const colorPicker = document.getElementById("colorPicker");
 const bgPicker = document.getElementById("bgPicker");
 
-let settings = {
-  inhale: 4,
-  hold1: 0,
-  exhale: 6,
-  hold2: 0
-};
+let activeSettings = { inhale:4, hold1:0, exhale:6, hold2:0 };
+let draftSettings = { ...activeSettings };
 
 let running = true;
 let loopId = 0;
@@ -458,17 +404,17 @@ function wait(ms){
 }
 
 function updateLabels(){
-  inhaleValue.textContent = settings.inhale + " sec";
-  hold1Value.textContent = settings.hold1 + " sec";
-  exhaleValue.textContent = settings.exhale + " sec";
-  hold2Value.textContent = settings.hold2 + " sec";
+  inhaleValue.textContent = draftSettings.inhale + " sec";
+  hold1Value.textContent = draftSettings.hold1 + " sec";
+  exhaleValue.textContent = draftSettings.exhale + " sec";
+  hold2Value.textContent = draftSettings.hold2 + " sec";
 }
 
 function syncSliders(){
-  inhaleSlider.value = settings.inhale;
-  hold1Slider.value = settings.hold1;
-  exhaleSlider.value = settings.exhale;
-  hold2Slider.value = settings.hold2;
+  inhaleSlider.value = draftSettings.inhale;
+  hold1Slider.value = draftSettings.hold1;
+  exhaleSlider.value = draftSettings.exhale;
+  hold2Slider.value = draftSettings.hold2;
   updateLabels();
 }
 
@@ -478,7 +424,7 @@ function restartBreath(){
   clearTimers();
 
   circle.style.transition = "none";
-  circle.style.transform = "scale(.06)";
+  circle.style.transform = "scale(0)";
 
   setTimeout(() => {
     running = true;
@@ -490,29 +436,29 @@ function restartBreath(){
 async function breatheLoop(id){
   while(running && id === loopId){
 
-    circle.style.transition = `${settings.inhale}s linear`;
+    circle.style.transition = `${activeSettings.inhale}s cubic-bezier(.35,.03,.65,.97)`;
     circle.style.transform = "scale(1)";
 
-    await wait(settings.inhale * 1000);
+    await wait(activeSettings.inhale * 1000);
     if(!running || id !== loopId) return;
 
-    if(settings.hold1 > 0){
+    if(activeSettings.hold1 > 0){
       circle.style.transition = "none";
       circle.style.transform = "scale(1)";
-      await wait(settings.hold1 * 1000);
+      await wait(activeSettings.hold1 * 1000);
       if(!running || id !== loopId) return;
     }
 
-    circle.style.transition = `${settings.exhale}s linear`;
-    circle.style.transform = "scale(.06)";
+    circle.style.transition = `${activeSettings.exhale}s cubic-bezier(.35,.03,.65,.97)`;
+    circle.style.transform = "scale(0)";
 
-    await wait(settings.exhale * 1000);
+    await wait(activeSettings.exhale * 1000);
     if(!running || id !== loopId) return;
 
-    if(settings.hold2 > 0){
+    if(activeSettings.hold2 > 0){
       circle.style.transition = "none";
-      circle.style.transform = "scale(.06)";
-      await wait(settings.hold2 * 1000);
+      circle.style.transform = "scale(0)";
+      await wait(activeSettings.hold2 * 1000);
       if(!running || id !== loopId) return;
     }
   }
@@ -523,6 +469,7 @@ resetBtn.addEventListener("click", () => {
 });
 
 applyBtn.addEventListener("click", () => {
+  activeSettings = { ...draftSettings };
   restartBreath();
   settingsPanel.classList.remove("active");
 });
@@ -539,11 +486,14 @@ presetBtn.addEventListener("click", () => {
 
 document.querySelectorAll(".preset").forEach(btn => {
   btn.addEventListener("click", () => {
-    settings.inhale = Number(btn.dataset.in);
-    settings.hold1 = Number(btn.dataset.h1);
-    settings.exhale = Number(btn.dataset.out);
-    settings.hold2 = Number(btn.dataset.h2);
+    activeSettings = {
+      inhale:Number(btn.dataset.in),
+      hold1:Number(btn.dataset.h1),
+      exhale:Number(btn.dataset.out),
+      hold2:Number(btn.dataset.h2)
+    };
 
+    draftSettings = { ...activeSettings };
     syncSliders();
     presetsPanel.classList.remove("active");
     restartBreath();
@@ -552,11 +502,10 @@ document.querySelectorAll(".preset").forEach(btn => {
 
 [inhaleSlider, hold1Slider, exhaleSlider, hold2Slider].forEach(slider => {
   slider.addEventListener("input", () => {
-    settings.inhale = Number(inhaleSlider.value);
-    settings.hold1 = Number(hold1Slider.value);
-    settings.exhale = Number(exhaleSlider.value);
-    settings.hold2 = Number(hold2Slider.value);
-
+    draftSettings.inhale = Number(inhaleSlider.value);
+    draftSettings.hold1 = Number(hold1Slider.value);
+    draftSettings.exhale = Number(exhaleSlider.value);
+    draftSettings.hold2 = Number(hold2Slider.value);
     updateLabels();
   });
 });
@@ -589,6 +538,45 @@ document.addEventListener("click", e => {
     presetsPanel.classList.remove("active");
   }
 });
+
+function makeDraggable(panel){
+  const handle = panel.querySelector(".panel-title");
+  let dragging = false;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  handle.addEventListener("pointerdown", e => {
+    dragging = true;
+    const rect = panel.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+
+    panel.style.left = rect.left + "px";
+    panel.style.top = rect.top + "px";
+    panel.style.right = "auto";
+    panel.style.bottom = "auto";
+    panel.style.transform = "none";
+
+    handle.setPointerCapture(e.pointerId);
+  });
+
+  handle.addEventListener("pointermove", e => {
+    if(!dragging) return;
+
+    const x = Math.min(window.innerWidth - panel.offsetWidth - 10, Math.max(10, e.clientX - offsetX));
+    const y = Math.min(window.innerHeight - panel.offsetHeight - 10, Math.max(10, e.clientY - offsetY));
+
+    panel.style.left = x + "px";
+    panel.style.top = y + "px";
+  });
+
+  handle.addEventListener("pointerup", () => {
+    dragging = false;
+  });
+}
+
+makeDraggable(settingsPanel);
+makeDraggable(presetsPanel);
 
 syncSliders();
 
