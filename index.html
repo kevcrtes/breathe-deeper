@@ -16,6 +16,8 @@
   --ring:rgba(0,0,0,.42);
   --circle:#1f8fba;
   --accent:#1f8fba;
+  --halo:rgba(31,143,186,.34);
+  --shadow:rgba(0,0,0,.22);
 }
 
 html,body{
@@ -102,6 +104,7 @@ body{
 }
 
 .outer-circle{
+  position:relative;
   width:min(52vw, 520px);
   height:min(52vw, 520px);
   min-width:280px;
@@ -115,9 +118,26 @@ body{
   opacity:0;
   animation:fadeIn 1.2s ease forwards;
   box-shadow:
-    inset 0 18px 38px rgba(255,255,255,.08),
-    inset 0 -22px 42px rgba(0,0,0,.16),
-    0 20px 90px rgba(0,0,0,.12);
+    inset 0 0 34px var(--shadow),
+    0 18px 70px rgba(0,0,0,.10);
+}
+
+.outer-circle::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  pointer-events:none;
+  opacity:0;
+  box-shadow:
+    0 0 35px 8px var(--halo),
+    inset 0 0 28px var(--halo);
+  transition:opacity .45s ease, box-shadow .45s ease;
+}
+
+.outer-circle.holding::after{
+  opacity:1;
+  animation:holdHalo 2.2s ease-in-out infinite;
 }
 
 .inner-circle{
@@ -127,9 +147,8 @@ body{
   background:var(--circle);
   transform:scale(0);
   transition:transform linear, background .4s ease;
-  box-shadow:
-    inset 0 14px 32px rgba(255,255,255,.06),
-    inset 0 -18px 36px rgba(0,0,0,.10);
+  box-shadow:inset 0 0 24px rgba(0,0,0,.08);
+  z-index:1;
 }
 
 .controls{
@@ -285,7 +304,22 @@ input[type="color"]{
   cursor:pointer;
 }
 
-@keyframes fadeIn{to{opacity:1;}}
+@keyframes fadeIn{
+  to{opacity:1;}
+}
+
+@keyframes holdHalo{
+  0%,100%{
+    box-shadow:
+      0 0 26px 4px var(--halo),
+      inset 0 0 22px var(--halo);
+  }
+  50%{
+    box-shadow:
+      0 0 48px 14px var(--halo),
+      inset 0 0 34px var(--halo);
+  }
+}
 
 @media(max-width:700px){
   .outer-circle{
@@ -337,7 +371,7 @@ input[type="color"]{
   </button>
 
   <div class="stage">
-    <div class="outer-circle">
+    <div class="outer-circle" id="outerCircle">
       <div class="inner-circle" id="circle"></div>
     </div>
   </div>
@@ -421,6 +455,8 @@ input[type="color"]{
 
 <script>
 const circle = document.getElementById("circle");
+const outerCircle = document.getElementById("outerCircle");
+
 const resetBtn = document.getElementById("resetBtn");
 const presetBtn = document.getElementById("presetBtn");
 const settingsBtn = document.getElementById("settingsBtn");
@@ -451,6 +487,19 @@ let draftSettings = { ...activeSettings };
 let running = true;
 let loopId = 0;
 let timers = [];
+
+const themes = {
+  dark:{
+    bg:"#02131d",
+    circle:"#1f8fba",
+    ring:"#000000"
+  },
+  light:{
+    bg:"#eeeeee",
+    circle:"#1f8fba",
+    ring:"#c9c9c9"
+  }
+};
 
 function hexToRgb(hex){
   const clean = hex.replace("#","");
@@ -490,6 +539,32 @@ function setBackgroundColor(hex){
   updateAutoContrast(hex);
 }
 
+function setCircleColor(hex){
+  const {r,g,b} = hexToRgb(hex);
+  document.documentElement.style.setProperty("--circle", hex);
+  document.documentElement.style.setProperty("--accent", hex);
+  document.documentElement.style.setProperty("--halo", `rgba(${r},${g},${b},.34)`);
+}
+
+function setRingColor(hex){
+  const {r,g,b} = hexToRgb(hex);
+  const alpha = luminance(hex) > 0.48 ? ".72" : ".42";
+  document.documentElement.style.setProperty("--ring", `rgba(${r},${g},${b},${alpha})`);
+
+  const shadowStrength = luminance(hex) > 0.48 ? ".20" : ".32";
+  document.documentElement.style.setProperty("--shadow", `rgba(0,0,0,${shadowStrength})`);
+}
+
+function applyTheme(theme){
+  bgPicker.value = theme.bg;
+  colorPicker.value = theme.circle;
+  ringPicker.value = theme.ring;
+
+  setBackgroundColor(theme.bg);
+  setCircleColor(theme.circle);
+  setRingColor(theme.ring);
+}
+
 function clearTimers(){
   timers.forEach(timer => clearTimeout(timer));
   timers = [];
@@ -521,6 +596,7 @@ function restartBreath(){
   running = false;
   loopId++;
   clearTimers();
+  outerCircle.classList.remove("holding");
 
   circle.style.transition = "none";
   circle.style.transform = "scale(0)";
@@ -535,6 +611,7 @@ function restartBreath(){
 async function breatheLoop(id){
   while(running && id === loopId){
 
+    outerCircle.classList.remove("holding");
     circle.style.transition = `${activeSettings.inhale}s cubic-bezier(.25,.02,.75,.98)`;
     circle.style.transform = "scale(1)";
 
@@ -542,9 +619,11 @@ async function breatheLoop(id){
     if(!running || id !== loopId) return;
 
     if(activeSettings.hold1 > 0){
+      outerCircle.classList.add("holding");
       circle.style.transition = "none";
       circle.style.transform = "scale(1)";
       await wait(activeSettings.hold1 * 1000);
+      outerCircle.classList.remove("holding");
       if(!running || id !== loopId) return;
     }
 
@@ -555,9 +634,11 @@ async function breatheLoop(id){
     if(!running || id !== loopId) return;
 
     if(activeSettings.hold2 > 0){
+      outerCircle.classList.add("holding");
       circle.style.transition = "none";
       circle.style.transform = "scale(0)";
       await wait(activeSettings.hold2 * 1000);
+      outerCircle.classList.remove("holding");
       if(!running || id !== loopId) return;
     }
   }
@@ -610,26 +691,19 @@ document.querySelectorAll(".preset").forEach(btn => {
 });
 
 darkBtn.addEventListener("click", () => {
-  bgPicker.value = "#02131d";
-  setBackgroundColor("#02131d");
+  applyTheme(themes.dark);
 });
 
 lightBtn.addEventListener("click", () => {
-  bgPicker.value = "#eeeeee";
-  setBackgroundColor("#eeeeee");
+  applyTheme(themes.light);
 });
 
 colorPicker.addEventListener("input", () => {
-  document.documentElement.style.setProperty("--circle", colorPicker.value);
-  document.documentElement.style.setProperty("--accent", colorPicker.value);
+  setCircleColor(colorPicker.value);
 });
 
 ringPicker.addEventListener("input", () => {
-  const hex = ringPicker.value;
-  const isLight = luminance(hex) > 0.48;
-  const alpha = isLight ? ".52" : ".42";
-  const {r,g,b} = hexToRgb(hex);
-  document.documentElement.style.setProperty("--ring", `rgba(${r},${g},${b},${alpha})`);
+  setRingColor(ringPicker.value);
 });
 
 bgPicker.addEventListener("input", () => {
@@ -686,7 +760,7 @@ makeDraggable(settingsPanel);
 makeDraggable(presetsPanel);
 
 syncSliders();
-setBackgroundColor("#02131d");
+applyTheme(themes.dark);
 
 window.onload = () => {
   restartBreath();
