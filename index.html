@@ -397,11 +397,11 @@ input[type="color"]{
 
     <div class="preset-grid">
       <button class="preset" data-in="4" data-h1="0" data-out="6" data-h2="0"><strong>4 · 6</strong><span>CALM</span></button>
-      <button class="preset" data-in="5" data-h1="0" data-out="5" data-h2="0"><strong>5 · 5</strong><span>BALANCE</span></button>
-      <button class="preset" data-in="4" data-h1="0" data-out="4" data-h2="0"><strong>4 · 4</strong><span>EASY</span></button>
+      <button class="preset" data-in="5.5" data-h1="0" data-out="5.5" data-h2="0"><strong>5.5 · 5.5</strong><span>RESONANCE</span></button>
+      <button class="preset" data-in="4" data-h1="0" data-out="8" data-h2="0"><strong>4 · 8</strong><span>RELEASE</span></button>
       <button class="preset" data-in="4" data-h1="7" data-out="8" data-h2="0"><strong>4 · 7 · 8</strong><span>DEEP</span></button>
-      <button class="preset" data-in="4" data-h1="4" data-out="4" data-h2="4"><strong>BOX</strong><span>4 · 4 · 4 · 4</span></button>
-      <button class="preset" data-in="3" data-h1="0" data-out="7" data-h2="0"><strong>3 · 7</strong><span>SLOW</span></button>
+      <button class="preset" data-in="4" data-h1="4" data-out="4" data-h2="4"><strong>BOX</strong><span>FOCUS</span></button>
+      <button class="preset" data-in="6" data-h1="0" data-out="6" data-h2="0"><strong>6 · 6</strong><span>FLOW</span></button>
     </div>
   </div>
 
@@ -635,11 +635,17 @@ async function animateHold(duration, id){
   await wait(60);
   if(!running || id !== loopId) return;
 
-  const fadeTime = Math.min(0.65, duration * 0.28);
+  /*
+    The hold guide should feel like it completes with the breath,
+    not before it and not after it. This uses a very short fade
+    at the final edge of the hold so the outline dissolves right
+    into the inhale/exhale transition.
+  */
+  const fadeTime = Math.min(0.34, duration * 0.10);
   const fadeStart = Math.max(0, duration - fadeTime);
 
   holdRing.classList.add("active");
-  holdRing.style.transition = "opacity .18s ease";
+  holdRing.style.transition = "opacity .16s ease";
   holdRing.style.opacity = "1";
 
   holdProgress.style.transition = `stroke-dashoffset ${duration}s linear`;
@@ -647,7 +653,7 @@ async function animateHold(duration, id){
 
   setTimeout(() => {
     if(!running || id !== loopId) return;
-    holdRing.style.transition = `opacity ${fadeTime}s ease`;
+    holdRing.style.transition = `opacity ${fadeTime}s ease-out`;
     holdRing.style.opacity = "0";
   }, fadeStart * 1000);
 
