@@ -141,7 +141,7 @@ body{
   z-index:3;
   pointer-events:none;
   opacity:0;
-  transition:opacity .35s ease;
+  transition:opacity .55s ease;
   transform:rotate(-90deg);
   filter:drop-shadow(0 0 7px var(--holdStroke));
 }
@@ -157,6 +157,7 @@ body{
   stroke-linecap:round;
   stroke-dasharray:314;
   stroke-dashoffset:314;
+  transition:stroke .4s ease;
 }
 
 .controls{
@@ -356,230 +357,461 @@ input[type="color"]{
 <body>
 <div class="app">
 
-<div class="logo">BREATHE DEEPER</div>
+  <div class="logo">BREATHE DEEPER</div>
 
-<button class="icon-btn settings-btn" id="settingsBtn">
-<svg viewBox="0 0 24 24">
-<circle cx="12" cy="12" r="3"></circle>
-<path d="M19.4 15a1.8 1.8 0 0 0 .36 2l.04.04a2 2 0 0 1-2.83 2.83l-.04-.04a1.8 1.8 0 0 0-2-.36 1.8 1.8 0 0 0-1.1 1.65V21a2 2 0 0 1-4 0v-.08a1.8 1.8 0 0 0-1.1-1.65 1.8 1.8 0 0 0-2 .36l-.04.04a2 2 0 1 1-2.83-2.83l.04-.04a1.8 1.8 0 0 0 .36-2 1.8 1.8 0 0 0-1.65-1.1H3a2 2 0 0 1 0-4h.08a1.8 1.8 0 0 0 1.65-1.1 1.8 1.8 0 0 0-.36-2l-.04-.04a2 2 0 1 1 2.83-2.83l.04.04a1.8 1.8 0 0 0 2 .36 1.8 1.8 0 0 0 1.1-1.65V3a2 2 0 0 1 4 0v.08a1.8 1.8 0 0 0 1.1 1.65 1.8 1.8 0 0 0 2-.36l.04-.04a2 2 0 1 1 2.83 2.83l-.04.04a1.8 1.8 0 0 0-.36 2 1.8 1.8 0 0 0 1.65 1.1H21a2 2 0 0 1 0 4h-.08A1.8 1.8 0 0 0 19.4 15z"></path>
-</svg>
-</button>
+  <button class="icon-btn settings-btn" id="settingsBtn" aria-label="Settings">
+    <svg viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="3"></circle>
+      <path d="M19.4 15a1.8 1.8 0 0 0 .36 2l.04.04a2 2 0 0 1-2.83 2.83l-.04-.04a1.8 1.8 0 0 0-2-.36 1.8 1.8 0 0 0-1.1 1.65V21a2 2 0 0 1-4 0v-.08a1.8 1.8 0 0 0-1.1-1.65 1.8 1.8 0 0 0-2 .36l-.04.04a2 2 0 1 1-2.83-2.83l.04-.04a1.8 1.8 0 0 0 .36-2 1.8 1.8 0 0 0-1.65-1.1H3a2 2 0 0 1 0-4h.08a1.8 1.8 0 0 0 1.65-1.1 1.8 1.8 0 0 0-.36-2l-.04-.04a2 2 0 1 1 2.83-2.83l.04.04a1.8 1.8 0 0 0 2 .36 1.8 1.8 0 0 0 1.1-1.65V3a2 2 0 0 1 4 0v.08a1.8 1.8 0 0 0 1.1 1.65 1.8 1.8 0 0 0 2-.36l.04-.04a2 2 0 1 1 2.83 2.83l-.04.04a1.8 1.8 0 0 0-.36 2 1.8 1.8 0 0 0 1.65 1.1H21a2 2 0 0 1 0 4h-.08A1.8 1.8 0 0 0 19.4 15z"></path>
+    </svg>
+  </button>
 
-<div class="stage">
-<div class="outer-circle">
+  <div class="stage">
+    <div class="outer-circle" id="outerCircle">
+      <div class="inner-circle" id="circle"></div>
 
-<div class="inner-circle" id="circle"></div>
+      <svg class="hold-ring" id="holdRing" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <circle class="hold-progress" id="holdProgress" cx="50" cy="50" r="49.4"></circle>
+      </svg>
+    </div>
+  </div>
 
-<svg class="hold-ring" id="holdRing" viewBox="0 0 100 100">
-<circle class="hold-progress" id="holdProgress" cx="50" cy="50" r="49.4"></circle>
-</svg>
+  <div class="controls">
+    <button class="icon-btn" id="presetBtn" aria-label="Presets">
+      <svg viewBox="0 0 24 24">
+        <path d="M6 7h12"></path>
+        <path d="M6 12h12"></path>
+        <path d="M6 17h12"></path>
+      </svg>
+    </button>
 
-</div>
-</div>
+    <button class="icon-btn" id="resetBtn" aria-label="Reset">
+      <svg viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="6"></circle>
+      </svg>
+    </button>
+  </div>
 
-<div class="controls">
+  <div class="panel presets-panel" id="presetsPanel">
+    <div class="panel-title">PRESETS</div>
 
-<button class="icon-btn" id="presetBtn">
-<svg viewBox="0 0 24 24">
-<path d="M6 7h12"></path>
-<path d="M6 12h12"></path>
-<path d="M6 17h12"></path>
-</svg>
-</button>
+    <div class="preset-grid">
+      <button class="preset" data-in="4" data-h1="0" data-out="6" data-h2="0"><strong>4 · 6</strong><span>CALM</span></button>
+      <button class="preset" data-in="5" data-h1="0" data-out="5" data-h2="0"><strong>5 · 5</strong><span>BALANCE</span></button>
+      <button class="preset" data-in="4" data-h1="0" data-out="4" data-h2="0"><strong>4 · 4</strong><span>EASY</span></button>
+      <button class="preset" data-in="4" data-h1="7" data-out="8" data-h2="0"><strong>4 · 7 · 8</strong><span>DEEP</span></button>
+      <button class="preset" data-in="4" data-h1="4" data-out="4" data-h2="4"><strong>BOX</strong><span>4 · 4 · 4 · 4</span></button>
+      <button class="preset" data-in="3" data-h1="0" data-out="7" data-h2="0"><strong>3 · 7</strong><span>SLOW</span></button>
+    </div>
+  </div>
 
-<button class="icon-btn" id="resetBtn">
-<svg viewBox="0 0 24 24">
-<circle cx="12" cy="12" r="6"></circle>
-</svg>
-</button>
+  <div class="panel settings-panel" id="settingsPanel">
+    <div class="panel-title">SETTINGS</div>
+
+    <div class="setting">
+      <div class="setting-top"><span>Inhale</span><span id="inhaleValue">4 sec</span></div>
+      <input type="range" min="1" max="12" value="4" id="inhaleSlider">
+    </div>
+
+    <div class="setting">
+      <div class="setting-top"><span>Hold</span><span id="hold1Value">0 sec</span></div>
+      <input type="range" min="0" max="12" value="0" id="hold1Slider">
+    </div>
+
+    <div class="setting">
+      <div class="setting-top"><span>Exhale</span><span id="exhaleValue">6 sec</span></div>
+      <input type="range" min="1" max="12" value="6" id="exhaleSlider">
+    </div>
+
+    <div class="setting">
+      <div class="setting-top"><span>Rest</span><span id="hold2Value">0 sec</span></div>
+      <input type="range" min="0" max="12" value="0" id="hold2Slider">
+    </div>
+
+    <button class="apply-btn" id="applyBtn">Apply</button>
+
+    <div class="toggle-row">
+      <button class="small-btn" id="darkBtn">Dark</button>
+      <button class="small-btn" id="lightBtn">Light</button>
+    </div>
+
+    <div class="color-row">
+      <span>Circle</span>
+      <input type="color" id="colorPicker" value="#1f8fba">
+    </div>
+
+    <div class="color-row">
+      <span>Container</span>
+      <input type="color" id="ringPicker" value="#000000">
+    </div>
+
+    <div class="color-row">
+      <span>Background</span>
+      <input type="color" id="bgPicker" value="#02131d">
+    </div>
+  </div>
 
 </div>
 
 <script>
 const circle = document.getElementById("circle");
+const outerCircle = document.getElementById("outerCircle");
 const holdRing = document.getElementById("holdRing");
 const holdProgress = document.getElementById("holdProgress");
 
-let inhale = 4;
-let hold1 = 0;
-let exhale = 6;
-let hold2 = 0;
+const resetBtn = document.getElementById("resetBtn");
+const presetBtn = document.getElementById("presetBtn");
+const settingsBtn = document.getElementById("settingsBtn");
+const applyBtn = document.getElementById("applyBtn");
 
+const presetsPanel = document.getElementById("presetsPanel");
+const settingsPanel = document.getElementById("settingsPanel");
+
+const inhaleSlider = document.getElementById("inhaleSlider");
+const hold1Slider = document.getElementById("hold1Slider");
+const exhaleSlider = document.getElementById("exhaleSlider");
+const hold2Slider = document.getElementById("hold2Slider");
+
+const inhaleValue = document.getElementById("inhaleValue");
+const hold1Value = document.getElementById("hold1Value");
+const exhaleValue = document.getElementById("exhaleValue");
+const hold2Value = document.getElementById("hold2Value");
+
+const darkBtn = document.getElementById("darkBtn");
+const lightBtn = document.getElementById("lightBtn");
+const colorPicker = document.getElementById("colorPicker");
+const ringPicker = document.getElementById("ringPicker");
+const bgPicker = document.getElementById("bgPicker");
+
+let activeSettings = { inhale:4, hold1:0, exhale:6, hold2:0 };
+let draftSettings = { ...activeSettings };
+
+let running = true;
 let loopId = 0;
+let timers = [];
 
-const circumference = 314;
+const holdLength = 314;
+
+const themes = {
+  dark:{
+    bg:"#02131d",
+    circle:"#1f8fba",
+    ring:"#000000"
+  },
+  light:{
+    bg:"#eeeeee",
+    circle:"#1f8fba",
+    ring:"#c9c9c9"
+  }
+};
 
 function hexToRgb(hex){
-hex = hex.replace("#","");
-const bigint = parseInt(hex,16);
-return {
-r:(bigint >> 16) & 255,
-g:(bigint >> 8) & 255,
-b:bigint & 255
-};
+  const clean = hex.replace("#","");
+  const bigint = parseInt(clean,16);
+  return {
+    r:(bigint >> 16) & 255,
+    g:(bigint >> 8) & 255,
+    b:bigint & 255
+  };
 }
 
 function rgbToHex(r,g,b){
-return "#" + [r,g,b].map(x => {
-const h = Math.round(x).toString(16);
-return h.length === 1 ? "0"+h : h;
-}).join("");
+  return "#" + [r,g,b].map(x => {
+    const hex = Math.max(0, Math.min(255, Math.round(x))).toString(16);
+    return hex.length === 1 ? "0" + hex : hex;
+  }).join("");
+}
+
+function lightenHex(hex, amount = 62){
+  const {r,g,b} = hexToRgb(hex);
+  return rgbToHex(
+    r + (255 - r) * amount / 100,
+    g + (255 - g) * amount / 100,
+    b + (255 - b) * amount / 100
+  );
 }
 
 function luminance(hex){
-const {r,g,b} = hexToRgb(hex);
-return (0.2126*r + 0.7152*g + 0.0722*b)/255;
+  const {r,g,b} = hexToRgb(hex);
+  const channels = [r,g,b].map(v => {
+    v /= 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+  return channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
 }
 
-function getAdaptiveHoldColor(hex){
+function updateAutoContrast(bg){
+  const isLight = luminance(bg) > 0.48;
 
-const lum = luminance(hex);
-
-if(lum > .82){
-
-const {r,g,b} = hexToRgb(hex);
-
-return rgbToHex(
-r * .45,
-g * .45,
-b * .45
-);
-
-}else{
-
-const {r,g,b} = hexToRgb(hex);
-
-return rgbToHex(
-r + (255-r)*.65,
-g + (255-g)*.65,
-b + (255-b)*.65
-);
-
+  if(isLight){
+    document.documentElement.style.setProperty("--text", "#101820");
+    document.documentElement.style.setProperty("--muted", "rgba(0,0,0,.28)");
+    document.documentElement.style.setProperty("--panel", "rgba(255,255,255,.76)");
+  }else{
+    document.documentElement.style.setProperty("--text", "#ffffff");
+    document.documentElement.style.setProperty("--muted", "rgba(255,255,255,.28)");
+    document.documentElement.style.setProperty("--panel", "rgba(5,14,20,.72)");
+  }
 }
+
+function setBackgroundColor(hex){
+  document.documentElement.style.setProperty("--bg", hex);
+  updateAutoContrast(hex);
 }
 
 function setCircleColor(hex){
+  const lightened = lightenHex(hex, 62);
+  document.documentElement.style.setProperty("--circle", hex);
+  document.documentElement.style.setProperty("--accent", hex);
+  document.documentElement.style.setProperty("--holdStroke", lightened);
+}
 
-document.documentElement.style.setProperty("--circle", hex);
+function setRingColor(hex){
+  const {r,g,b} = hexToRgb(hex);
+  const alpha = luminance(hex) > 0.48 ? ".72" : ".42";
+  document.documentElement.style.setProperty("--ring", `rgba(${r},${g},${b},${alpha})`);
 
-const holdColor = getAdaptiveHoldColor(hex);
+  const shadowStrength = luminance(hex) > 0.48 ? ".20" : ".32";
+  document.documentElement.style.setProperty("--shadow", `rgba(0,0,0,${shadowStrength})`);
+}
 
-document.documentElement.style.setProperty("--holdStroke", holdColor);
+function applyTheme(theme){
+  bgPicker.value = theme.bg;
+  colorPicker.value = theme.circle;
+  ringPicker.value = theme.ring;
 
+  setBackgroundColor(theme.bg);
+  setCircleColor(theme.circle);
+  setRingColor(theme.ring);
+}
+
+function clearTimers(){
+  timers.forEach(timer => clearTimeout(timer));
+  timers = [];
+}
+
+function wait(ms){
+  return new Promise(resolve => {
+    const timer = setTimeout(resolve, ms);
+    timers.push(timer);
+  });
+}
+
+function updateLabels(){
+  inhaleValue.textContent = draftSettings.inhale + " sec";
+  hold1Value.textContent = draftSettings.hold1 + " sec";
+  exhaleValue.textContent = draftSettings.exhale + " sec";
+  hold2Value.textContent = draftSettings.hold2 + " sec";
+}
+
+function syncSliders(){
+  inhaleSlider.value = draftSettings.inhale;
+  hold1Slider.value = draftSettings.hold1;
+  exhaleSlider.value = draftSettings.exhale;
+  hold2Slider.value = draftSettings.hold2;
+  updateLabels();
 }
 
 function resetHoldRing(){
-
-holdRing.classList.remove("active");
-
-holdProgress.style.transition = "none";
-holdProgress.style.strokeDasharray = circumference;
-holdProgress.style.strokeDashoffset = circumference;
-
-}
-
-async function wait(ms){
-return new Promise(resolve => setTimeout(resolve,ms));
+  holdRing.classList.remove("active");
+  holdProgress.style.transition = "none";
+  holdProgress.style.strokeDashoffset = holdLength;
 }
 
 async function animateHold(duration, id){
+  resetHoldRing();
 
-holdRing.classList.add("active");
+  await wait(60);
+  if(!running || id !== loopId) return;
 
-holdProgress.style.transition = "none";
-holdProgress.style.strokeDashoffset = circumference;
+  holdRing.classList.add("active");
+  holdProgress.style.transition = `stroke-dashoffset ${duration}s linear`;
+  holdProgress.style.strokeDashoffset = "0";
 
-await wait(40);
+  await wait(duration * 1000);
+  if(!running || id !== loopId) return;
 
-if(id !== loopId) return;
+  holdRing.classList.remove("active");
 
-const fadeStart = duration * .82;
+  await wait(450);
 
-holdProgress.style.transition = `stroke-dashoffset ${duration}s linear, opacity ${duration-fadeStart}s ease`;
-
-holdProgress.style.strokeDashoffset = "0";
-
-setTimeout(() => {
-
-if(id !== loopId) return;
-
-holdRing.style.opacity = "0";
-
-}, fadeStart * 1000);
-
-await wait(duration * 1000);
-
-holdRing.classList.remove("active");
-
-holdRing.style.opacity = "";
-
-holdProgress.style.transition = "none";
-holdProgress.style.strokeDashoffset = circumference;
-
+  holdProgress.style.transition = "none";
+  holdProgress.style.strokeDashoffset = holdLength;
 }
 
-async function breathe(id){
+function restartBreath(){
+  running = false;
+  loopId++;
+  clearTimers();
+  resetHoldRing();
 
-while(id === loopId){
+  circle.style.transition = "none";
+  circle.style.transform = "scale(0)";
 
-resetHoldRing();
-
-circle.style.transition = `${inhale}s cubic-bezier(.25,.02,.75,.98)`;
-circle.style.transform = "scale(1)";
-
-await wait(inhale * 1000);
-
-if(id !== loopId) return;
-
-if(hold1 > 0){
-
-circle.style.transition = "none";
-circle.style.transform = "scale(1)";
-
-await animateHold(hold1,id);
-
+  setTimeout(() => {
+    running = true;
+    loopId++;
+    breatheLoop(loopId);
+  }, 120);
 }
 
-if(id !== loopId) return;
+async function breatheLoop(id){
+  while(running && id === loopId){
 
-circle.style.transition = `${exhale}s cubic-bezier(.25,.02,.75,.98)`;
-circle.style.transform = "scale(0)";
+    resetHoldRing();
 
-await wait(exhale * 1000);
+    circle.style.transition = `${activeSettings.inhale}s cubic-bezier(.25,.02,.75,.98)`;
+    circle.style.transform = "scale(1)";
 
-if(id !== loopId) return;
+    await wait(activeSettings.inhale * 1000);
+    if(!running || id !== loopId) return;
 
-if(hold2 > 0){
+    if(activeSettings.hold1 > 0){
+      circle.style.transition = "none";
+      circle.style.transform = "scale(1)";
+      await animateHold(activeSettings.hold1, id);
+      if(!running || id !== loopId) return;
+    }
 
-circle.style.transition = "none";
-circle.style.transform = "scale(0)";
+    circle.style.transition = `${activeSettings.exhale}s cubic-bezier(.25,.02,.75,.98)`;
+    circle.style.transform = "scale(0)";
 
-await animateHold(hold2,id);
+    await wait(activeSettings.exhale * 1000);
+    if(!running || id !== loopId) return;
 
+    if(activeSettings.hold2 > 0){
+      circle.style.transition = "none";
+      circle.style.transform = "scale(0)";
+      await animateHold(activeSettings.hold2, id);
+      if(!running || id !== loopId) return;
+    }
+  }
 }
 
+resetBtn.addEventListener("click", () => {
+  restartBreath();
+});
+
+applyBtn.addEventListener("click", () => {
+  activeSettings = { ...draftSettings };
+  restartBreath();
+  settingsPanel.classList.remove("active");
+});
+
+settingsBtn.addEventListener("click", () => {
+  settingsPanel.classList.toggle("active");
+  presetsPanel.classList.remove("active");
+});
+
+presetBtn.addEventListener("click", () => {
+  presetsPanel.classList.toggle("active");
+  settingsPanel.classList.remove("active");
+});
+
+document.querySelectorAll(".preset").forEach(btn => {
+  btn.addEventListener("click", () => {
+    activeSettings = {
+      inhale:Number(btn.dataset.in),
+      hold1:Number(btn.dataset.h1),
+      exhale:Number(btn.dataset.out),
+      hold2:Number(btn.dataset.h2)
+    };
+
+    draftSettings = { ...activeSettings };
+    syncSliders();
+    presetsPanel.classList.remove("active");
+    restartBreath();
+  });
+});
+
+[inhaleSlider, hold1Slider, exhaleSlider, hold2Slider].forEach(slider => {
+  slider.addEventListener("input", () => {
+    draftSettings.inhale = Number(inhaleSlider.value);
+    draftSettings.hold1 = Number(hold1Slider.value);
+    draftSettings.exhale = Number(exhaleSlider.value);
+    draftSettings.hold2 = Number(hold2Slider.value);
+    updateLabels();
+  });
+});
+
+darkBtn.addEventListener("click", () => {
+  applyTheme(themes.dark);
+});
+
+lightBtn.addEventListener("click", () => {
+  applyTheme(themes.light);
+});
+
+colorPicker.addEventListener("input", () => {
+  setCircleColor(colorPicker.value);
+});
+
+ringPicker.addEventListener("input", () => {
+  setRingColor(ringPicker.value);
+});
+
+bgPicker.addEventListener("input", () => {
+  setBackgroundColor(bgPicker.value);
+});
+
+document.addEventListener("click", e => {
+  if(!settingsPanel.contains(e.target) && !settingsBtn.contains(e.target)){
+    settingsPanel.classList.remove("active");
+  }
+
+  if(!presetsPanel.contains(e.target) && !presetBtn.contains(e.target)){
+    presetsPanel.classList.remove("active");
+  }
+});
+
+function makeDraggable(panel){
+  const handle = panel.querySelector(".panel-title");
+  let dragging = false;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  handle.addEventListener("pointerdown", e => {
+    dragging = true;
+    const rect = panel.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+
+    panel.style.left = rect.left + "px";
+    panel.style.top = rect.top + "px";
+    panel.style.right = "auto";
+    panel.style.bottom = "auto";
+    panel.style.transform = "none";
+
+    handle.setPointerCapture(e.pointerId);
+  });
+
+  handle.addEventListener("pointermove", e => {
+    if(!dragging) return;
+
+    const x = Math.min(window.innerWidth - panel.offsetWidth - 10, Math.max(10, e.clientX - offsetX));
+    const y = Math.min(window.innerHeight - panel.offsetHeight - 10, Math.max(10, e.clientY - offsetY));
+
+    panel.style.left = x + "px";
+    panel.style.top = y + "px";
+  });
+
+  handle.addEventListener("pointerup", () => {
+    dragging = false;
+  });
 }
-}
 
-function restart(){
+makeDraggable(settingsPanel);
+makeDraggable(presetsPanel);
 
-loopId++;
+holdProgress.style.strokeDasharray = holdLength;
+holdProgress.style.strokeDashoffset = holdLength;
 
-circle.style.transition = "none";
-circle.style.transform = "scale(0)";
+syncSliders();
+applyTheme(themes.dark);
 
-setTimeout(() => {
-breathe(loopId);
-},120);
-
-}
-
-holdProgress.style.strokeDasharray = circumference;
-holdProgress.style.strokeDashoffset = circumference;
-
-setCircleColor("#1f8fba");
-
-restart();
+window.onload = () => {
+  restartBreath();
+};
 </script>
 
 </body>
